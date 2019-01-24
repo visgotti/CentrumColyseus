@@ -1,12 +1,13 @@
 {
   "name": "gotti-colyseus",
-  "version": "0.0.2",
+  "version": "0.0.31",
   "description": "Colyseus extension for Gotti.js, leverages distributing messaging to split traditional colyseus rooms into N area rooms and M connector rooms.",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
+    "build": "tsc",
     "test": "mocha --recursive --require ts-node/register 'test/**/*.test.ts' --exit"
   },
   "author": "visgotti",

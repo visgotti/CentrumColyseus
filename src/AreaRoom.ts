@@ -1,5 +1,5 @@
 import {AreaClient as Client, AreaClient} from './AreaClient';
-import { BackMaster, BackChannel } from 'centrum';
+import { BackMaster, BackChannel } from 'gotti-channels';
 import {Protocols} from "./Protocols";
 import { EventEmitter } from 'events';
 
@@ -107,9 +107,9 @@ export abstract class AreaRoom extends EventEmitter {
     private _onRemovedAreaClientWrite(sessionId, options?) {};
 
     private registerBackChannelMessages() {
-        this.areaChannel.onMessage((message, frontUid, sessionId) => {
+        this.areaChannel.onMessage((message) => {
             if (message[0] === Protocols.AREA_DATA) {
-                this.onMessage(sessionId, message[1]);
+            //    this.onMessage();
             } else if (message[0] === Protocols.GLOBAL_GAME_DATA) {
                 this.onGlobalMessage(message[1])
             } else if (message[0] === Protocols.REMOTE_SYSTEM_MESSAGE) {

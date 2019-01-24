@@ -117,11 +117,11 @@ describe('Gotti/Colyseus Room Integration tests', () => {
 
     describe('Connector Room', () => {
         describe('#onJoin/#onLeave', function() {
-            it('should receive onJoin messages and add centrumClient to client', function () {
+            it('should receive onJoin messages and add gottiClient to client', function () {
                 var message = null;
                 connectorRooms[0]._onJoin(client1, {});
                 assert.equal(client1.messages.length, 1);
-                assert.ok(client1.hasOwnProperty('centrumClient'));
+                assert.ok(client1.hasOwnProperty('gottiClient'));
                 message = msgpack.decode(client1.messages[0]);
                 assert.equal(message[0], Protocol.JOIN_ROOM);
             });
@@ -189,7 +189,7 @@ describe('Gotti/Colyseus Room Integration tests', () => {
 
                         setTimeout(() => {
                             sinon.assert.calledOnce(onAddedAreaListenSpy);
-                            assert.ok(client1.centrumClient.isLinkedToChannel(0));
+                            assert.ok(client1.gottiClient.isLinkedToChannel(0));
                             requestSpy.resetHistory();
                             _requestSpy.resetHistory();
                             addAreaListenSpy.resetHistory();
@@ -256,7 +256,7 @@ describe('Gotti/Colyseus Room Integration tests', () => {
                 sinon.assert.calledOnce(onRemovedAreaListenSpy);
 
                 assert.ok(removeRequestSpy.returned(true));
-                assert.ok(!(client1.centrumClient.isLinkedToChannel(0)));
+                assert.ok(!(client1.gottiClient.isLinkedToChannel(0)));
 
                 removeRequestSpy.resetHistory();
                 _removeRequestSpy.resetHistory();

@@ -6,11 +6,11 @@
  *  Original code was written by-
  *  https://github.com/colyseus and https://github.com/endel
  *
- *  modified to fit CentrumColyseus by -
+ *  modified to fit GottiColyseus by -
  *  https://github.com/visgotti
  ***************************************************************************************/
 
-import { FrontMaster, Client as CentrumClient } from 'centrum';
+import { FrontMaster, Client as GottiClient } from 'gotti-channels';
 import { Protocols } from './Protocols';
 
 import * as fossilDelta from 'fossil-delta';
@@ -298,7 +298,7 @@ public lock(): void {
 
   protected sendState(client: Client): void {
 
-    const stateUpdates = client.centrumClient.queuedEncodedUpdates;
+    const stateUpdates = client.gottiClient.queuedEncodedUpdates;
     if (stateUpdates.length) {
 
       send(client, [
@@ -308,7 +308,7 @@ public lock(): void {
         this.clock.elapsedTime]
       );
       // clear updates after sent.
-      client.centrumClient.clearStateUpdates();
+      client.gottiClient.clearStateUpdates();
     }
   }
 
@@ -469,7 +469,7 @@ public lock(): void {
   }
 
   private registerClientAreaMessageHandling(client) {
-    client.centrumClient.onMessage((message) => {
+    client.gottiClient.onMessage((message) => {
       if (message[0] === Protocols.ADD_AREA_LISTEN) {
         // message[1] areaId,
         // message[2] options
@@ -515,9 +515,9 @@ public lock(): void {
       }
 
       if (message[0] === Protocols.AREA_DATA) {
-          client.centrumClient.sendLocal(message[1]);
+          client.gottiClient.sendLocal(message[1]);
       } else if (message[0] === Protocols.GLOBAL_GAME_DATA) {
-        client.centrumClient.sendGlobal(message[1]);
+        client.gottiClient.sendGlobal(message[1]);
       } else if (message[0] === Protocols.ADD_AREA_LISTEN) {
         this._requestAreaListen(client, message[1], message[2]);
       } else if (message[0] === Protocols.REMOVE_AREA_LISTEN) {
@@ -541,7 +541,7 @@ public lock(): void {
 
   private async addAreaListen(client, areaId, options?) : Promise<boolean> {
     try{
-      const { responseOptions } = await client.centrumClient.linkChannel(areaId);
+      const { responseOptions } = await client.gottiClient.linkChannel(areaId);
 
       const combinedOptions = responseOptions ? { options, ...responseOptions } : options;
 
@@ -581,13 +581,13 @@ public lock(): void {
   private async changeAreaWrite(client, newAreaId, writeOptions?, oldWriteOptions?, listenOptions?) : Promise<boolean> {
 
     // if the client wasnt already linked, add listener before writing.
-    if(!(client.centrumClient.isLinkedToChannel(newAreaId))) {
+    if(!(client.gottiClient.isLinkedToChannel(newAreaId))) {
       if (! await this.addAreaListen(client, newAreaId, listenOptions)) {
         return false
       };
     }
 
-    const success = client.centrumClient.setProcessorChannel(newAreaId, false, writeOptions, oldWriteOptions);
+    const success = client.gottiClient.setProcessorChannel(newAreaId, false, writeOptions, oldWriteOptions);
     if(success) {
       this.onAddedAreaWrite(client, newAreaId);
       send(client, [Protocols.CHANGE_AREA_WRITE, newAreaId]);
@@ -599,7 +599,7 @@ public lock(): void {
 
   private removeAreaListen(client, areaId, options) {
     if(!(this.masterChannel.frontChannels[areaId])) throw new Error(`Invalid areaId ${areaId}`);
-    client.centrumClient.unlinkChannel(areaId);
+    client.gottiClient.unlinkChannel(areaId);
 
     this.onRemovedAreaListen(client, areaId, options);
 
@@ -646,8 +646,8 @@ public lock(): void {
         this.remoteClients[client.sessionId] = client as any;
       }
 
-      // add a centrumClient to client
-      client.centrumClient = new CentrumClient(client.sessionId || client.id, this.masterChannel);
+      // add a gottiClient to client
+      client.gottiClient = new GottiClient(client.sessionId || client.id, this.masterChannel);
       this.registerClientAreaMessageHandling(client);
       this.clients.push( client );
       this.clientsBySessionId[client.sessionId] = client;
@@ -694,8 +694,8 @@ public lock(): void {
       // call abstract 'onLeave' method only if the client has been successfully accepted.
       if (spliceOne(this.clients, this.clients.indexOf(client)) && this.onLeave) {
         delete this.clientsBySessionId[client.sessionId];
-        // disconnect centrum client too.
-        client.centrumClient.unlinkChannel();
+        // disconnect gotti client too.
+        client.gottiClient.unlinkChannel();
         await this.onLeave(client, (code === WS_CLOSE_CONSENTED));
     }
 

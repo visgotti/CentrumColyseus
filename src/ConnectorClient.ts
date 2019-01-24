@@ -3,7 +3,9 @@
  * with the additional 'centrumClient' object and its methods to communicate with the centrum back channels
  * which are aliased as 'Areas'
  */
-import { Client as CentrumClient } from 'centrum';
+import { Client as GottiClient } from 'gotti-channels';
+import * as WebSocket from 'ws';
+import * as http from 'http';
 
 // Export 'WebSocket' as 'Client' with 'id' property.
 export type ConnectorClient = WebSocket & {
@@ -14,5 +16,5 @@ export type ConnectorClient = WebSocket & {
   pingCount: number; // ping / pong
   remote?: boolean; // is this a remote client, from another process?
   auth?: any; // custom data set through Room's verifyClient method.
-  centrumClient: CentrumClient;
+  gottiClient: GottiClient;
 };
